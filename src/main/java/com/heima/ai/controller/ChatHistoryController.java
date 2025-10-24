@@ -14,14 +14,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ai/history")
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class ChatHistoryController {
 
     @Autowired
     @Qualifier("inSqlChatHistoryRepository") //会话历史列表：sql模式存储
     private ChatHistoryRepository chatHistoryRepository;
 
-    private final ChatMemory chatMemory;
+    @Autowired
+    @Qualifier("chatMemorySql") //会话历史列表：从pgsql中读取。 默认内存中读取
+    private ChatMemory chatMemory;
 
     /**
      * 获取聊天记录列表
