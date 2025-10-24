@@ -11,7 +11,7 @@ public interface ChatHistoryRepository  {
     void save(String type, String chatId);
 
     /**
-     * TODO 删除聊天记录
+     * 删除聊天记录
      * @param type
      * @param chatId
      */

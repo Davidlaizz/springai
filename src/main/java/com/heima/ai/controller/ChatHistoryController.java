@@ -6,10 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,7 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatHistoryController {
 
-    private final ChatHistoryRepository chatHistoryRepository;
+    @Autowired
+    @Qualifier("inSqlChatHistoryRepository") //会话历史列表：sql模式存储
+    private ChatHistoryRepository chatHistoryRepository;
 
     private final ChatMemory chatMemory;
 
@@ -48,5 +49,17 @@ public class ChatHistoryController {
         return messages.stream().map(MessageVO::new).toList();
     }
 
-
+    /**
+     * 根据会话id删除聊天会话窗口和聊天记录
+     * @param type 业务类型，如：chat，service，pdf
+     * @param chatId 会话ID
+     * @return 聊天记录
+     */
+    @DeleteMapping("/{type}/{chatId}")
+    public void deleteChatHistory(@PathVariable String type, @PathVariable String chatId){
+        // 删除会话列表
+        chatHistoryRepository.delete(type, chatId);
+        // 删除具体会话
+        chatMemory.clear(chatId);
+    }
 }

@@ -19,6 +19,13 @@
           >
             <ChatBubbleLeftRightIcon class="icon" />
             <span class="title">{{ chat.title || '新对话' }}</span>
+            <button 
+              class="delete-btn"
+              @click.stop="confirmDeleteChat(chat.id)"
+              title="删除对话"
+            >
+              <TrashIcon class="icon" />
+            </button>
           </div>
         </div>
       </div>
@@ -96,7 +103,8 @@ import {
   PlusIcon,
   PaperClipIcon,
   DocumentIcon,
-  XMarkIcon
+  XMarkIcon,
+  TrashIcon
 } from '@heroicons/vue/24/outline'
 import ChatMessage from '../components/ChatMessage.vue'
 import { chatAPI } from '../services/api'
@@ -391,6 +399,35 @@ const removeFile = (index) => {
   }
 }
 
+// 确认删除聊天记录
+const confirmDeleteChat = (chatId) => {
+  if (confirm('确定要删除这个对话吗？删除后无法恢复。')) {
+    deleteChat(chatId)
+  }
+}
+
+// 删除聊天记录
+const deleteChat = async (chatId) => {
+  try {
+    await chatAPI.deleteChatHistory('chat', chatId)
+    
+    // 从聊天历史列表中移除
+    chatHistory.value = chatHistory.value.filter(chat => chat.id !== chatId)
+    
+    // 如果删除的是当前对话，切换到其他对话或创建新对话
+    if (currentChatId.value === chatId) {
+      if (chatHistory.value.length > 0) {
+        await loadChat(chatHistory.value[0].id)
+      } else {
+        startNewChat()
+      }
+    }
+  } catch (error) {
+    console.error('删除对话失败:', error)
+    alert('删除对话失败，请稍后重试')
+  }
+}
+
 onMounted(() => {
   loadChatHistory()
   adjustTextareaHeight()
@@ -476,9 +513,15 @@ onMounted(() => {
         border-radius: 0.5rem;
         cursor: pointer;
         transition: background-color 0.3s;
+        position: relative;
         
         &:hover {
           background: rgba(255, 255, 255, 0.1);
+          
+          .delete-btn {
+            opacity: 1;
+            visibility: visible;
+          }
         }
         
         &.active {
@@ -495,6 +538,31 @@ onMounted(() => {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+        }
+        
+        .delete-btn {
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s ease;
+          padding: 0.25rem;
+          border: none;
+          background: rgba(255, 77, 79, 0.1);
+          color: #ff4d4f;
+          border-radius: 0.25rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          &:hover {
+            background: #ff4d4f;
+            color: white;
+          }
+          
+          .icon {
+            width: 1rem;
+            height: 1rem;
+          }
         }
       }
     }
@@ -779,6 +847,16 @@ onMounted(() => {
   .history-item {
     &:hover {
       background: rgba(255, 255, 255, 0.05) !important;
+      
+      .delete-btn {
+        background: rgba(255, 77, 79, 0.2);
+        color: #ff7875;
+        
+        &:hover {
+          background: #ff4d4f;
+          color: white;
+        }
+      }
     }
     
     &.active {

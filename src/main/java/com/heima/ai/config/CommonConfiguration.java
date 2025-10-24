@@ -1,5 +1,6 @@
 package com.heima.ai.config;
 
+import com.heima.ai.repository.InSqlChatMemory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
@@ -12,12 +13,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CommonConfiguration {
+    /**
+     * 聊天对话对白记忆，内存模式和sql模式
+     * @return
+     */
     @Bean
     public ChatMemory chatMemory() {
-        return MessageWindowChatMemory.builder()
-                .chatMemoryRepository(new InMemoryChatMemoryRepository()) // 设置存储库，默认内存策略
-                .maxMessages(10) // 记忆窗口大小（保留最近的10条消息）,默认20条
-                .build();
+//        return MessageWindowChatMemory.builder()
+//                .chatMemoryRepository(new InMemoryChatMemoryRepository()) // 设置存储库，默认内存策略
+//                .maxMessages(10) // 记忆窗口大小（保留最近的10条消息）,默认20条
+//                .build();
+        return new InSqlChatMemory();
     }
 
     @Bean
@@ -27,7 +33,7 @@ public class CommonConfiguration {
                 .defaultSystem("你是我的智能秘书助理，在接下来的对话中请以此身份和我对话")
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
-                            MessageChatMemoryAdvisor.builder(chatMemory()).build()
+                        MessageChatMemoryAdvisor.builder(chatMemory()).build()
                 )
                 .build();
     }

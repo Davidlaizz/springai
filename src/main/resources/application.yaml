@@ -13,7 +13,15 @@ spring:
         options:
           model: qwen-max-latest
           temperature: 0.8 # 模型温度，值越大模型越随机
+  datasource:
+    url: jdbc:postgresql://192.168.216.101:5432/springai?currentSchema=dev
+    username: root
+    password: mysecretpassword
+    # driver-class-name 通常可以省略，Spring Boot 会自动检测
+#    driver-class-name: org.postgresql.Driver
+
 logging:
   level:
       org.springframework.ai.chat.client.advisor: debug
       com.heima.ai: debug
+

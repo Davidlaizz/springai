@@ -121,5 +121,23 @@ export const chatAPI = {
       console.error('API Error:', error)
       throw error
     }
+  },
+
+  // 删除聊天记录
+  async deleteChatHistory(type, chatId) {
+    try {
+      const response = await fetch(`${BASE_URL}/ai/history/${type}/${chatId}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return true
+    } catch (error) {
+      console.error('API Error:', error)
+      throw error
+    }
   }
 } 

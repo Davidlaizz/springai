@@ -4,6 +4,8 @@ import com.heima.ai.repository.ChatHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -15,7 +17,9 @@ public class ChatController {
 
     private final ChatClient chatClient;
 
-    private final ChatHistoryRepository chatHistoryRepository;
+    @Autowired
+    @Qualifier("inSqlChatHistoryRepository") //会话历史列表：sql模式存储
+    private ChatHistoryRepository chatHistoryRepository;
 
 //    @RequestMapping("/chat")
 //    public String chat(String prompt) {

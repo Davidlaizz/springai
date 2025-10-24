@@ -11,7 +11,7 @@ import java.util.Map;
 @Repository
 public class InMemoryChatHistoryRepository implements ChatHistoryRepository{
 
-    private final Map<String, List<String>> chatHistory = new HashMap<>();
+    private final Map<String, List<String>> chatHistory = new HashMap<>(); //key: 业务类型，value: 会话ID列表
 
     /**
      * 保存聊天记录
@@ -44,10 +44,10 @@ public class InMemoryChatHistoryRepository implements ChatHistoryRepository{
      */
     @Override
     public void delete(String type, String chatId) {
-//        List<String> chatIds = chatHistory.get(type);
-//        if (chatIds != null) {
-//            chatIds.remove(chatId);
-//        }
+        List<String> chatIds = chatHistory.get(type);
+        if (chatIds != null) {
+            chatIds.remove(chatId);
+        }
     }
 
     /**
